@@ -4,11 +4,9 @@ import { ChristmasScene } from './component/ChristmasScene';
 
 function App() {
   return (
-    <div className="App">
       <Canvas>
         <ChristmasScene />
       </Canvas>
-    </div>
   );
 }
 

@@ -8,7 +8,6 @@ import { Toys } from './Toys'
 import { useToyStore } from '../store/useToyStore'
 import { ChristmasBall } from './ChirstmasBall'
 import { NewMessageDialog } from './NewMessageDialog'
-import { ExistingMessages } from './ExistingMessages'
 import { ChristmasHook } from './ChristmasHook'
 export const Showcase = (props) => {
     const { nodes, materials } = useGLTF('/showcase.glb')
