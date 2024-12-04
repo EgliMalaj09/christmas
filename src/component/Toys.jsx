@@ -4,6 +4,7 @@ import { toysCollectionRef } from "../firebase";
 import { useToyStore } from "../store/useToyStore";
 import ballImage from '../images/christmas_ball.png';
 import hookImage from '../images/christmas_hook.png';
+import { useMobile } from "../hooks/useMobile";
 
 export const Toys = () => {
     const [toys, setToys] = useState([]);
@@ -28,6 +29,7 @@ export const Toys = () => {
 };
 
 const Toy = React.memo(({ data }) => {
+    const isMobile = useMobile()
     const { name } = data;
     const { selectToy, selectedToyName } = useToyStore();
 
@@ -54,9 +56,9 @@ const Toy = React.memo(({ data }) => {
     const buttonStyle = {
         border: selectedToyName === componentToRender.alt ? '2px solid green' : '1px solid #ccc',
         borderRadius: '5px',
-        padding: '5px',
+        padding: isMobile ? '4px' : '10px',
         cursor: 'pointer',
-        backgroundColor: "transparent"
+        backgroundColor: "transparent",
     };
 
     if (!data) return null;
@@ -64,8 +66,8 @@ const Toy = React.memo(({ data }) => {
     return (
         <div style={{ marginRight: 10 }}>
             <button onClick={handleSelect} style={buttonStyle}>
-                <img src={componentToRender.src} alt={componentToRender.alt} width={100} height={120} />
-                <p>{componentToRender.name}</p>
+                <img src={componentToRender.src} alt={componentToRender.alt} width={isMobile ? '60' : '100'} height={isMobile ? '70' : '120'} />
+                <p style={{ fontSize: isMobile ? '12px' : '14px' }}>{componentToRender.name}</p>
             </button>
         </div>
     );

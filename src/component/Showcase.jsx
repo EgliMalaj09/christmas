@@ -12,7 +12,7 @@ import { ExistingMessages } from './ExistingMessages'
 import { ChristmasHook } from './ChristmasHook'
 import { SantaHat } from './SantaHat'
 import { Santa } from './Santa'
-
+import { useMobile } from "../hooks/useMobile"
 export const Showcase = (props) => {
     const { nodes, materials } = useGLTF('/showcase.glb')
     const tree = useRef()
@@ -28,6 +28,9 @@ export const Showcase = (props) => {
     const [isInitialClicked, setIsInitialClicked] = useState(false)
     const [showClickAnywhere, setShowClickAnywhere] = useState(true)
     const hatRef = useRef(null)
+
+    const isMobile = useMobile();
+    console.log(isMobile);
 
     const handleModelClick = () => {
         setShowClickAnywhere(false);
@@ -137,22 +140,26 @@ export const Showcase = (props) => {
 
             {
                 showButtons &&
-                <Html position={[0.2, 0, 0]}>
+                <Html position={isMobile ? [0, 0.3, 0] : [0.2, 0.2, 0]}>
                     <Card
                         size="lg"
                         style={{
-                            width: '300px',
+                            width: !isMobile ? '300px' : '200px',
                             padding: '10px',
                             background: 'rgba(192, 192, 192, 0.8)',
                             border: '1px solid #b0b0b0',
                             boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
                             borderRadius: '8px',
                             color: '#000',
+                            margin: 'auto'
                         }}
                     >
-                        <h4>Try to modify your tree!</h4>
-                        <p>Select one of the decoration below then select click somewhere in the tree to add that decoration. After that you will be asked for a message for your lovely teammember.</p>
-                        <p>Meanwhile click one of the decorations in the tree to check what others wrote!</p>
+                        <h4 style={{ fontSize: isMobile ? '18px' : '24px', marginBottom: isMobile ? '10px' : '15px' }}>
+                            Try to modify your tree!</h4>
+                        <p style={{ fontSize: isMobile ? '14px' : '16px', marginBottom: isMobile ? '10px' : '20px' }}>
+                            Select one of the decoration below then select click somewhere in the tree to add that decoration. After that you will be asked for a message for your lovely teammember.</p>
+                        <p style={{ fontSize: isMobile ? '14px' : '16px', marginBottom: isMobile ? '10px' : '20px' }}>
+                            Meanwhile click one of the decorations in the tree to check what others wrote!</p>
                         <Toys />
                     </Card>
                 </Html>
