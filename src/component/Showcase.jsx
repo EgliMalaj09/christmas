@@ -20,14 +20,14 @@ export const Showcase = (props) => {
     const targetPosition = { x: -0.024, y: 0.04, z: 2.1 }
     const [showButtons, setShowButtons] = useState(false)
     const [clickPosition, setClickPosition] = useState(null)
-    const { selectedToyName } = useToyStore();
+    const selectedToyName = useToyStore((state) => state.selectedToyName);
     const modalRef = useRef(null)
     const modelRef = useRef(null)
     const santaRef = useRef(null)
     const existingMessagesGroup = useRef(new THREE.Group());
     const [isInitialClicked, setIsInitialClicked] = useState(false)
     const [showClickAnywhere, setShowClickAnywhere] = useState(true)
-
+    const hatRef = useRef(null)
 
     const handleModelClick = () => {
         setShowClickAnywhere(false);
@@ -53,13 +53,13 @@ export const Showcase = (props) => {
                     x: -0.2, // Slight nose-up tilt
                     z: 0.1, // Slight banking tilt
                 }, '<') // Start this animation at the same time as the position
-                .add(() => {
-                    santaRef.current.visible = false;
-                })
         }
     };
 
+    console.log("selectedToyName outside", selectedToyName);
     const handleClick = (event) => {
+        const selectedToyName = useToyStore.getState().selectedToyName;
+
         mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
@@ -73,8 +73,15 @@ export const Showcase = (props) => {
         const treeIntersects = raycaster.intersectObject(tree.current);
         if (treeIntersects.length > 0) {
             const intersection = treeIntersects[0].point;
+            console.log("selectedInside: ", selectedToyName);
             tree.current.worldToLocal(intersection);
-            setClickPosition({ x: intersection.x, y: 2, z: intersection.z });
+            if (
+                selectedToyName === "ChristmasBall"
+            ) {
+                setClickPosition({ x: intersection.x - 1, y: 2, z: intersection.z });
+            } else {
+                setClickPosition({ x: intersection.x, y: 2, z: intersection.z });
+            }
 
 
             setTimeout(() => {
@@ -413,6 +420,7 @@ export const Showcase = (props) => {
             />
             <group position={[-0.08, 0.06, 0]}>
                 <SantaHat scale={0.01} rotation={[0, -Math.PI, -Math.PI / 8.8]} position={[0.075, 0.090, 2]}
+                    ref={hatRef}
                 />
                 <mesh
                     castShadow
@@ -443,11 +451,14 @@ export const Showcase = (props) => {
                 />
             </group>
 
+
             <Santa
                 scale={0.025}
                 position={[0.1, 0.042, 1.9]}
                 ref={santaRef}
             />
+
+
             {
                 showClickAnywhere && (<Html position={[0.06, 0.03, 1.9]}
                 >

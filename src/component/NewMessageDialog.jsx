@@ -33,7 +33,8 @@ export const NewMessageDialog = React.forwardRef((props, ref) => {
             toy: toy
 
         }).then(() => {
-            props?.onClose()
+            props?.onSubmit()
+
         })
     }
 
