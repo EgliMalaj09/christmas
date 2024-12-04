@@ -24,7 +24,6 @@ export const Toys = () => {
 };
 
 const Toy = ({ data }) => {
-    if (!data) return null;
     const { name } = data;
 
     const { selectToy, selectedToyName } = useToyStore();
@@ -46,6 +45,7 @@ const Toy = ({ data }) => {
         }
     }, [data])
 
+
     const handleSelect = () => {
         selectToy(componentToRender.alt)
     }
@@ -58,6 +58,8 @@ const Toy = ({ data }) => {
     };
 
 
+
+    if (!data) return null;
 
     return (
         <div style={{ marginRight: 10 }}>

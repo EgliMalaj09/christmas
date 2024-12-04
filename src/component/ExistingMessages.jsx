@@ -9,15 +9,15 @@ import { Html } from "@react-three/drei"
 export const ExistingMessages = () => {
     const [existingMessages, setExistingMessages] = useState([])
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        getDocs(messageCollectionRef).then((snapshot) => {
-            const data = snapshot.docs.map((doc) => {
-                return doc.data();
-            })
-            setExistingMessages(data)
-        })
-    }, [])
+    //     getDocs(messageCollectionRef).then((snapshot) => {
+    //         const data = snapshot.docs.map((doc) => {
+    //             return doc.data();
+    //         })
+    //         setExistingMessages(data)
+    //     })
+    // }, [])
 
     // const existingMessagesObject = useMemo(() => {
 
