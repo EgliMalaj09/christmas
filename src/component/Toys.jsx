@@ -1,6 +1,4 @@
-import { getDocs } from "firebase/firestore";
 import { useEffect, useMemo, useState } from "react";
-import { toysCollectionRef } from "../firebase";
 import { useToyStore } from "../store/useToyStore";
 
 export const Toys = () => {

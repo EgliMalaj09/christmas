@@ -1,6 +1,5 @@
 import { getDocs } from "firebase/firestore"
 import { useEffect, useMemo, useState } from "react"
-import { messageCollectionRef } from "../firebase"
 import { ChristmasBall } from "./ChirstmasBall"
 import { ChristmasHook } from "./ChristmasHook"
 

@@ -1,7 +1,5 @@
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Button } from "@mui/material"
-import { addDoc, doc, getDocs, setDoc } from "firebase/firestore"
 import React, { useState, useImperativeHandle } from "react"
-import { db, messageCollectionRef } from "../firebase"
 
 export const NewMessageDialog = React.forwardRef((props, ref) => {
     const [isModalOpened, setIsModalOpened] = useState(false)
