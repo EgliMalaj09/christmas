@@ -1,15 +1,19 @@
+import { getDocs } from "firebase/firestore";
 import { useEffect, useMemo, useState } from "react";
+import { toysCollectionRef } from "../firebase";
 import { useToyStore } from "../store/useToyStore";
+import ballImage from '../images/christmas_ball.png';
+import hookImage from '../images/christmas_hook.png';
 
 export const Toys = () => {
     const [toys, setToys] = useState([]);
 
-    // useEffect(() => {
-    //     getDocs(toysCollectionRef).then((snapshot) => {
-    //         const toysArray = snapshot.docs.map((doc) => doc.data());
-    //         setToys(toysArray);
-    //     });
-    // }, []);
+    useEffect(() => {
+        getDocs(toysCollectionRef).then((snapshot) => {
+            const toysArray = snapshot.docs.map((doc) => doc.data());
+            setToys(toysArray);
+        });
+    }, []);
 
     return (
         <div>
@@ -25,39 +29,36 @@ export const Toys = () => {
 
 const Toy = ({ data }) => {
     const { name } = data;
-
     const { selectToy, selectedToyName } = useToyStore();
-
-    const componentToRender = useMemo(() => {
-        if (name === 'ball.glb') {
-            return {
-                src: '../../public/images/christmas_ball.png',
-                alt: "ChristmasBall",
-                name: "Christmas Ball"
-            }
-        } else {
-            return {
-                src: '../../public/images/christmas_hook.png',
-                alt: "ChristmasHook",
-                name: "Christmas Hook"
-
-            }
-        }
-    }, [data])
-
 
     const handleSelect = () => {
         selectToy(componentToRender.alt)
     }
 
+
+    const componentToRender = useMemo(() => {
+        if (name === 'ball.glb') {
+            return {
+                src: ballImage,
+                alt: "ChristmasBall",
+                name: "Christmas Ball"
+            };
+        } else {
+            return {
+                src: hookImage,
+                alt: "ChristmasHook",
+                name: "Christmas Hook"
+            };
+        }
+    }, [name])
+
     const buttonStyle = {
         border: selectedToyName === componentToRender.alt ? '2px solid green' : '1px solid #ccc',
         borderRadius: '5px',
         padding: '5px',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        backgroundColor: 'transparent'
     };
-
-
 
     if (!data) return null;
 

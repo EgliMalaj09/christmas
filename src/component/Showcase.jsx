@@ -8,6 +8,9 @@ import { Toys } from './Toys'
 import { useToyStore } from '../store/useToyStore'
 import { ChristmasBall } from './ChirstmasBall'
 import { NewMessageDialog } from './NewMessageDialog'
+import { getDocs } from 'firebase/firestore'
+import { messageCollectionRef } from '../firebase'
+import { ExistingMessages } from './ExistingMessages'
 import { ChristmasHook } from './ChristmasHook'
 export const Showcase = (props) => {
     const { nodes, materials } = useGLTF('/showcase.glb')
@@ -19,9 +22,9 @@ export const Showcase = (props) => {
     const { selectedToyName } = useToyStore();
     const modalRef = useRef(null)
     const existingMessagesGroup = useRef(new THREE.Group());
-
+    const [isInitialClicked, setIsInitialClicked] = useState(false)
     const handleTreeClick = () => {
-        if (tree.current) {
+        if (tree.current && !isInitialClicked) {
             animateCamera()
         }
     }
@@ -67,6 +70,7 @@ export const Showcase = (props) => {
             ease: 'power2.inOut',
             onComplete: () => {
                 setShowButtons(true)
+                setIsInitialClicked(true)
                 window.addEventListener('click', handleClick);
             }
         })
@@ -78,11 +82,16 @@ export const Showcase = (props) => {
         };
     }, []);
 
-    const handleDialogClose = () => {
+    const handleDialogSubmit = () => {
         modalRef.current.handleClose()
         setShowButtons(true)
         window.location.reload()
 
+    }
+
+    const onDialogClose = () => {
+        modalRef.current.handleClose()
+        setShowButtons(true)
     }
 
     return (
@@ -90,7 +99,7 @@ export const Showcase = (props) => {
             {
                 selectedToyName && clickPosition && (
                     <Html style={{ pointerEvents: 'auto', zIndex: 100 }}>
-                        <NewMessageDialog position={clickPosition} toy={selectedToyName} onClose={handleDialogClose} ref={modalRef} />
+                        <NewMessageDialog position={clickPosition} toy={selectedToyName} onSubmit={handleDialogSubmit} onClose={onDialogClose} ref={modalRef} />
                     </Html>
                 )
             }
@@ -197,9 +206,9 @@ export const Showcase = (props) => {
                     onClick={handleTreeClick}
                 />
 
-                {/* <group ref={existingMessagesGroup}>
+                <group ref={existingMessagesGroup}>
                     <ExistingMessages />
-                </group> */}
+                </group>
 
 
                 {selectedToyName === 'ChristmasBall' && clickPosition && (
