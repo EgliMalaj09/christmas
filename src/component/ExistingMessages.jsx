@@ -6,12 +6,12 @@ import { ChristmasHook } from "./ChristmasHook"
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material"
 import { Html } from "@react-three/drei"
+import { Transition } from "./NewMessageDialog"
 
-export const ExistingMessages = () => {
+export const ExistingMessages = ({ disableButtons, showButtons }) => {
     const [existingMessages, setExistingMessages] = useState([])
 
     useEffect(() => {
-
         getDocs(messageCollectionRef).then((snapshot) => {
             const data = snapshot.docs.map((doc) => {
                 return doc.data();
@@ -24,14 +24,14 @@ export const ExistingMessages = () => {
         <>
             {
                 existingMessages.map((messageObject) => {
-                    return <ExistingMessage {...messageObject} />
+                    return <ExistingMessage key={`${messageObject.tittle} ${messageObject.name}`} {...messageObject} disableButtons={disableButtons} showButtons={showButtons} />
                 })
             }
         </>
     )
 }
 
-const ExistingMessage = ({ tittle, position, name, toy }) => {
+const ExistingMessage = ({ tittle, position, name, toy, disableButtons, showButtons }) => {
     const [isOpened, setIsOpened] = useState(false)
     const renderInformation = useMemo(() => {
         if (toy === "ChristmasBall") {
@@ -51,10 +51,10 @@ const ExistingMessage = ({ tittle, position, name, toy }) => {
         }
     }, [tittle, position, name, toy])
 
-    console.log("renderInformation: ", renderInformation);
     const handlePointerDown = (event) => {
         event.stopPropagation();
         setIsOpened(true);
+        disableButtons()
     };
 
     return (
@@ -65,10 +65,17 @@ const ExistingMessage = ({ tittle, position, name, toy }) => {
                 scale={toy === 'ChristmasBall' ? 0.2 : 3}
             />
             <Html>
-                <Dialog
-                    open={isOpened}
-                    onClose={() => setIsOpened(false)}
-                >
+                <Dialog sx={{
+                    '& .MuiBackdrop-root': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)', // Semi-transparent black overlay
+                    },
+                    '& .MuiPaper-root': {
+                        backgroundColor: 'white', // Transparent background for the dialog
+                        color: 'black', // White text color for content
+                        boxShadow: 'none', // Remove default shadows
+                        width: 300
+                    },
+                }} open={isOpened} TransitionComponent={Transition} keepMounted onClose={() => setIsOpened(false)}>
                     <DialogTitle id="alert-dialog-title">
                         {renderInformation.modalTitle}
                     </DialogTitle>
@@ -76,15 +83,17 @@ const ExistingMessage = ({ tittle, position, name, toy }) => {
                         <DialogContentText id="alert-dialog-description">
                             {renderInformation.modalContent}
                         </DialogContentText>
-
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => setIsOpened(false)} color="primary">
+                        <Button onClick={() => {
+                            setIsOpened(false)
+                            showButtons()
+                        }} color="primary">
                             Close
                         </Button>
                     </DialogActions>
                 </Dialog>
-            </Html>
+            </Html >
         </>
     )
 

@@ -98,7 +98,7 @@ export const NewMessageDialog = React.forwardRef((props, ref) => {
     )
 })
 
-const Transition = React.forwardRef(function Transition(
+export const Transition = React.forwardRef(function Transition(
     props,
     ref
 ) {

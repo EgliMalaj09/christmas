@@ -8,26 +8,56 @@ import { Toys } from './Toys'
 import { useToyStore } from '../store/useToyStore'
 import { ChristmasBall } from './ChirstmasBall'
 import { NewMessageDialog } from './NewMessageDialog'
-import { getDocs } from 'firebase/firestore'
-import { messageCollectionRef } from '../firebase'
 import { ExistingMessages } from './ExistingMessages'
 import { ChristmasHook } from './ChristmasHook'
+import { SantaHat } from './SantaHat'
+import { Santa } from './Santa'
+
 export const Showcase = (props) => {
     const { nodes, materials } = useGLTF('/showcase.glb')
     const tree = useRef()
-    const { camera, set, raycaster, mouse } = useThree()
+    const { camera, raycaster, mouse } = useThree()
     const targetPosition = { x: -0.024, y: 0.04, z: 2.1 }
     const [showButtons, setShowButtons] = useState(false)
     const [clickPosition, setClickPosition] = useState(null)
     const { selectedToyName } = useToyStore();
     const modalRef = useRef(null)
+    const modelRef = useRef(null)
+    const santaRef = useRef(null)
     const existingMessagesGroup = useRef(new THREE.Group());
     const [isInitialClicked, setIsInitialClicked] = useState(false)
-    const handleTreeClick = () => {
-        if (tree.current && !isInitialClicked) {
-            animateCamera()
+    const [showClickAnywhere, setShowClickAnywhere] = useState(true)
+
+
+    const handleModelClick = () => {
+        setShowClickAnywhere(false);
+        setTimeout(() => {
+            if (tree.current && !isInitialClicked && modelRef.current) {
+                animateCamera(); // Trigger camera animation
+            }
+        }, 1000)
+        if (santaRef.current) {
+            // Use a GSAP timeline for smooth, chained animations
+            const timeline = gsap.timeline({
+                defaults: { duration: 2, ease: 'power3.inOut' } // Smooth easing
+            });
+
+            timeline
+                // Lift off: Move up and forward with a slight tilt
+                .to(santaRef.current.position, {
+                    x: santaRef.current.position.x - 1, // Move left
+                    y: santaRef.current.position.y + 2, // Lift upward
+                    z: santaRef.current.position.z + 3, // Move forward
+                })
+                .to(santaRef.current.rotation, {
+                    x: -0.2, // Slight nose-up tilt
+                    z: 0.1, // Slight banking tilt
+                }, '<') // Start this animation at the same time as the position
+                .add(() => {
+                    santaRef.current.visible = false;
+                })
         }
-    }
+    };
 
     const handleClick = (event) => {
         mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -44,15 +74,8 @@ export const Showcase = (props) => {
         if (treeIntersects.length > 0) {
             const intersection = treeIntersects[0].point;
             tree.current.worldToLocal(intersection);
+            setClickPosition({ x: intersection.x, y: 2, z: intersection.z });
 
-            if (
-                selectedToyName === "ChristmasBall"
-            ) {
-                setClickPosition({ x: intersection.x - 1, y: 2, z: intersection.z });
-            } else {
-                setClickPosition({ x: intersection.x, y: 2, z: intersection.z });
-
-            }
 
             setTimeout(() => {
                 setShowButtons(false);
@@ -95,7 +118,7 @@ export const Showcase = (props) => {
     }
 
     return (
-        <group {...props} dispose={null}>
+        <group {...props} dispose={null} onPointerDown={handleModelClick} ref={modelRef}>
             {
                 selectedToyName && clickPosition && (
                     <Html style={{ pointerEvents: 'auto', zIndex: 100 }}>
@@ -122,6 +145,7 @@ export const Showcase = (props) => {
                     >
                         <h4>Try to modify your tree!</h4>
                         <p>Select one of the decoration below then select click somewhere in the tree to add that decoration. After that you will be asked for a message for your lovely teammember.</p>
+                        <p>Meanwhile click one of the decorations in the tree to check what others wrote!</p>
                         <Toys />
                     </Card>
                 </Html>
@@ -203,11 +227,10 @@ export const Showcase = (props) => {
                     geometry={nodes.Object_9001.geometry}
                     material={materials['Xmas_tree.001']}
                     ref={tree}
-                    onClick={handleTreeClick}
                 />
 
                 <group ref={existingMessagesGroup}>
-                    <ExistingMessages />
+                    <ExistingMessages showButtons={() => setShowButtons(true)} disableButtons={() => setShowButtons(false)} />
                 </group>
 
 
@@ -388,35 +411,67 @@ export const Showcase = (props) => {
                 rotation={[Math.PI / 2, 0, 0.337]}
                 scale={3.514}
             />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={nodes.Curve001.geometry}
-                material={nodes.Curve001.material}
-                position={[0.07, 0.069, 1.877]}
-                rotation={[Math.PI / 2, 0, 0]}
-                scale={3.357}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={nodes.Curve003.geometry}
-                material={nodes.Curve003.material}
-                position={[0.07, 0.069, 1.877]}
-                rotation={[0.792, 0, 0]}
-                scale={3.357}
-            />
-            <mesh
-                castShadow
-                receiveShadow
-                geometry={nodes.Curve010.geometry}
-                material={nodes.Curve010.material}
-                position={[0.07, 0.069, 1.877]}
-                rotation={[Math.PI / 2, 0, 0]}
-                scale={3.357}
-            />
+            <group position={[-0.08, 0.06, 0]}>
+                <SantaHat scale={0.01} rotation={[0, -Math.PI, -Math.PI / 8.8]} position={[0.075, 0.090, 2]}
+                />
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.Curve001.geometry}
+                    material={nodes.Curve001.material}
+                    position={[0.07, 0.069, 1.877]}
+                    rotation={[Math.PI / 2, 0, 0]}
+                    scale={3.357}
+                />
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.Curve003.geometry}
+                    material={nodes.Curve003.material}
+                    position={[0.07, 0.069, 1.877]}
+                    rotation={[0.792, 0, 0]}
+                    scale={3.357}
+                />
+                <mesh
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.Curve010.geometry}
+                    material={nodes.Curve010.material}
+                    position={[0.07, 0.069, 1.877]}
+                    rotation={[Math.PI / 2, 0, 0]}
+                    scale={3.357}
+                />
+            </group>
 
-            <pointLight intensity={10} color={"gold"} position={[0.07, 0.1, 1.9]}
+            <Santa
+                scale={0.025}
+                position={[0.1, 0.042, 1.9]}
+                ref={santaRef}
+            />
+            {
+                showClickAnywhere && (<Html position={[0.06, 0.03, 1.9]}
+                >
+                    <Card
+                        size="lg"
+                        style={{
+                            width: '150px',
+                            padding: '10px',
+                            background: 'rgba(192, 192, 192, 0.8)',
+                            border: '1px solid #b0b0b0',
+                            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+                            borderRadius: '8px',
+                            color: '#000',
+                        }}
+                    >
+                        Click Anywhere
+                    </Card>
+                </Html>)
+            }
+
+            <pointLight
+                intensity={50} color={"gold"}
+                position={[0, 0.2, 2.1]}
+                rotation={[0, 0, 0]}
             />
         </group >
     )

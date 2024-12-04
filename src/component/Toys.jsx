@@ -1,5 +1,5 @@
 import { getDocs } from "firebase/firestore";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { toysCollectionRef } from "../firebase";
 import { useToyStore } from "../store/useToyStore";
 import ballImage from '../images/christmas_ball.png';
@@ -27,14 +27,13 @@ export const Toys = () => {
     );
 };
 
-const Toy = ({ data }) => {
+const Toy = React.memo(({ data }) => {
     const { name } = data;
     const { selectToy, selectedToyName } = useToyStore();
 
     const handleSelect = () => {
-        selectToy(componentToRender.alt)
+        selectToy(componentToRender.alt);
     }
-
 
     const componentToRender = useMemo(() => {
         if (name === 'ball.glb') {
@@ -42,22 +41,22 @@ const Toy = ({ data }) => {
                 src: ballImage,
                 alt: "ChristmasBall",
                 name: "Christmas Ball"
-            };
+            }
         } else {
             return {
                 src: hookImage,
                 alt: "ChristmasHook",
                 name: "Christmas Hook"
-            };
+            }
         }
-    }, [name])
+    }, [name]);
 
     const buttonStyle = {
         border: selectedToyName === componentToRender.alt ? '2px solid green' : '1px solid #ccc',
         borderRadius: '5px',
         padding: '5px',
         cursor: 'pointer',
-        backgroundColor: 'transparent'
+        backgroundColor: "transparent"
     };
 
     if (!data) return null;
@@ -68,7 +67,8 @@ const Toy = ({ data }) => {
                 <img src={componentToRender.src} alt={componentToRender.alt} width={100} height={120} />
                 <p>{componentToRender.name}</p>
             </button>
-
         </div>
     );
-};
+});
+
+export default Toy;
